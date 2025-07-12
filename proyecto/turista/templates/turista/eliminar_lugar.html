@@ -1,0 +1,9 @@
+{% extends 'turista/base.html' %}
+{% block content %}
+<h2>¿Estás seguro que deseas eliminar "{{ lugar.nombre }}"?</h2>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sí, eliminar</button>
+  <a href="{% url 'catalogo' %}">Cancelar</a>
+</form>
+{% endblock %}

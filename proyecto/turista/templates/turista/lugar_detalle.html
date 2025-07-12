@@ -1,0 +1,146 @@
+{% extends 'turista/base.html' %}
+
+{% block title %}{{ lugar.nombre }}{% endblock %}
+
+{% block content %}
+<style>
+  .lugar-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .titulo {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .imagen-lugar {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    object-fit: cover;
+    max-height: 350px;
+  }
+
+  .comentario {
+    background-color: #f7f7f7;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .comentario-titulo {
+    margin-top: 30px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+  }
+
+  .comentario-form {
+    margin-top: 20px;
+  }
+
+  .btn-enviar {
+    background-color: #0066cc;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-enviar:hover {
+    background-color: #004d99;
+  }
+
+  .estrellas {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .estrellas input[type="radio"] {
+    display: none;
+  }
+
+  .estrellas label {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0 2px;
+  }
+
+  .estrellas input[type="radio"]:checked ~ label,
+  .estrellas label:hover,
+  .estrellas label:hover ~ label {
+    color: #f5b301;
+  }
+</style>
+
+<div class="lugar-container">
+  <h2 class="titulo">{{ lugar.nombre }}</h2>
+
+  {% if lugar.imagen %}
+    <img src="{{ lugar.imagen.url }}" alt="{{ lugar.nombre }}" class="imagen-lugar">
+  {% endif %}
+
+  <p><strong>Ubicación:</strong> {{ lugar.ubicacion }}</p>
+  <p><strong>Horario:</strong> {{ lugar.horario }}</p>
+  <p>{{ lugar.descripcion }}</p>
+
+  <hr>
+
+  <h3 class="comentario-titulo">🗨️ Otros comentarios existentes</h3>
+
+  {% if comentarios %}
+    {% for comentario in comentarios %}
+      <div class="comentario">
+        <p><strong>{{ comentario.usuario.username }}</strong> comentó el {{ comentario.creado_el|date:"d M Y H:i" }}:</p>
+        <p>
+          Calificación:
+          {% for i in "12345" %}
+            {% if forloop.counter <= comentario.calificacion %}⭐
+            {% else %}☆{% endif %}
+          {% endfor %}
+        </p>
+        <p>{{ comentario.texto }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No hay comentarios aún. Sé el primero en dejar tu opinión.</p>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <div class="comentario-form">
+      <h4>✍️ Escribe tu comentario</h4>
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Estrellas interactivas -->
+        <div class="estrellas">
+          {% for i in "54321" %}
+            <input type="radio" name="calificacion" id="estrella{{ i }}" value="{{ i }}">
+            <label for="estrella{{ i }}">★</label>
+          {% endfor %}
+        </div>
+
+        {{ form.texto.errors }}
+        <textarea name="texto" rows="3" style="width: 100%;" placeholder="Escribe tu opinión...">{{ form.texto.value }}</textarea>
+        <br><br>
+        <button type="submit" class="btn-enviar">Enviar comentario</button>
+      </form>
+    </div>
+  {% else %}
+    <p><a href="{% url 'login' %}">Inicia sesión</a> para dejar un comentario.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
