@@ -1,13 +1,18 @@
 {% extends 'turista/base.html' %}
 
 {% block content %}
+<div class="container mt-5 d-flex flex-column align-items-center">
+  <div class="card shadow-sm p-4 text-center" style="max-width: 600px; width: 100%;">
+    <h3 class="mb-3 text-primary">Bienvenido a la Guía Turística</h3>
 
-<h3>Inicio</h3>
-{% if request.user.is_authenticated %}
-  <hr>
-  <h4>
-    {{ user.username | upper }}, bienvenido
-  </h4>
-  {% endif %}
-
-  {% endblock %}
+    {% if request.user.is_authenticated %}
+      <div class="alert alert-success w-100">
+        <h5 class="mb-0">👋 ¡Hola, {{ user.username|title }}! Nos alegra tenerte de vuelta.</h5>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">Explora los mejores destinos turísticos de forma segura y organizada.</p>
+      <p class="mt-2">Para continuar, necesitas autenticarte en la plataforma.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -14,4 +14,5 @@ urlpatterns = [
     path('acerca/', views.acerca, name='acerca'),
     path('contacto/', views.contacto, name='contacto'),
     path('blog/', views.blog, name='blog'),
+    path('error/error_403/', views.error403, name='error_403'),
 ]

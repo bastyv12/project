@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from .forms import CustomUserCreationForm
 from .models import LugarTuristico, Comentario
 from .forms import  LugarForm, ComentarioForm
@@ -9,6 +9,10 @@ from django.contrib.auth import logout
 
 def home(request):
     return render(request, 'turista/home.html')
+
+def error403(request):
+    return render(request, 'turista/error403.html')
+
 
 # Registro de usuario
 def register(request):
@@ -40,7 +44,6 @@ def cerrar_sesion(request):
     return redirect('login')    
 
 
-@login_required
 def catalogo_lugares(request):
     categoria = request.GET.get('categoria')
     if categoria:
@@ -53,7 +56,7 @@ def catalogo_lugares(request):
     })
 
 # Agregar lugar
-@login_required
+@permission_required('turista.add_post', login_url='error_403')
 def agregar_lugar(request):
     if request.method == 'POST':
         form = LugarForm(request.POST, request.FILES)
@@ -87,7 +90,7 @@ def lugar_detalle(request, id):
     })
 
 # Editar lugar
-@login_required
+@permission_required('turista.change_post', login_url='error_403')
 def editar_lugar(request, id):
     lugar = get_object_or_404(LugarTuristico, id=id)
     if request.method == 'POST':
@@ -100,7 +103,7 @@ def editar_lugar(request, id):
     return render(request, 'turista/editar_lugar.html', {'form': form})
 
 # Eliminar lugar
-@login_required
+@permission_required('turista.delete_post', login_url='error_403')
 def eliminar_lugar(request, id):
     lugar = get_object_or_404(LugarTuristico, id=id)
     if request.method == 'POST':
