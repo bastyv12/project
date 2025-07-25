@@ -1,0 +1,14 @@
+{% extends 'turista/base.html' %}
+{% block title %}Eliminar de Agenda{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>🗑️ ¿Eliminar lugar de tu agenda?</h2>
+  <p>¿Estás seguro de eliminar <strong>{{ agenda.lugar.nombre }}</strong> de tu agenda?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'mi_agenda' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

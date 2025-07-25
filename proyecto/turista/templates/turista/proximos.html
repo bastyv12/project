@@ -1,0 +1,27 @@
+{% extends 'turista/base.html' %}
+{% block title %}Próximos Viajes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">📅 Próximos Viajes</h2>
+
+  {% if proximos %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for item in proximos %}
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <img src="{{ item.lugar.imagen.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ item.lugar.nombre }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ item.lugar.nombre }}</h5>
+              <p class="card-text">{{ item.lugar.descripcion|truncatechars:100 }}</p>
+              <p><strong>Visita planificada:</strong> {{ item.fecha_planificada }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">Aún no tienes viajes planificados.</div>
+  {% endif %}
+</div>
+{% endblock %}

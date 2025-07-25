@@ -1,0 +1,45 @@
+{% extends 'turista/base.html' %}
+{% block title %}Catálogo Filtrado{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>🔍 Catálogo de Lugares</h2>
+
+  <form method="GET" action="{% url 'filtrar_lugares' %}" class="row g-3 mb-4">
+    <div class="col-md-4">
+      <select name="categoria" class="form-select">
+        <option value="">Todas las categorías</option>
+        {% for key, label in categorias %}
+        <option value="{{ key }}" {% if categoria == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <input type="text" name="ubicacion" class="form-control" placeholder="Buscar por ubicación" value="{{ ubicacion }}">
+    </div>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+    </div>
+  </form>
+
+  {% if lugares %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for lugar in lugares %}
+        <div class="col">
+          <div class="card h-100">
+            <img src="{{ lugar.imagen.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ lugar.nombre }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ lugar.nombre }}</h5>
+              <p class="card-text">{{ lugar.descripcion|truncatewords:20 }}</p>
+              <p class="text-muted"><strong>Ubicación:</strong> {{ lugar.ubicacion }}</p>
+              <p class="text-muted"><strong>Categoría:</strong> {{ lugar.get_categoria_display }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning mt-4">No se encontraron lugares con esos filtros.</div>
+  {% endif %}
+</div>
+{% endblock %}

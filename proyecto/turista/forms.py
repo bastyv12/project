@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import LugarTuristico, Comentario
 from django.contrib.auth.models import User
 from django.db import models
+from .models import AgendaViajes
 
 
 # Formulario para registrar lugares
@@ -31,3 +32,11 @@ class CustomUserCreationForm(UserCreationForm):
             raise forms.ValidationError('Este correo electrónico ya está registrado.')
         return email
 
+class AgendaForm(forms.ModelForm):
+    class Meta:
+        model = AgendaViajes
+        fields = ['fecha_planificada', 'notas']
+        widgets = {
+            'fecha_planificada': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'notas': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

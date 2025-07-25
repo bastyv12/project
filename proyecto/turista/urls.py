@@ -15,4 +15,12 @@ urlpatterns = [
     path('contacto/', views.contacto, name='contacto'),
     path('blog/', views.blog, name='blog'),
     path('error/error_403/', views.error403, name='error_403'),
+    path('mi-agenda/', views.mi_agenda, name='mi_agenda'),
+    path('favoritos/', views.lugares_favoritos, name='favoritos'),
+    path('proximos/', views.proximos_viajes, name='proximos'),
+    path('agregar/<int:lugar_id>/', views.agregar_a_agenda, name='agregar_a_agenda'),
+    path('favorito/<int:agenda_id>/', views.marcar_favorito, name='marcar_favorito'),
+    path('agenda/editar/<int:agenda_id>/', views.editar_agenda, name='editar_agenda'),
+    path('agenda/eliminar/<int:agenda_id>/', views.eliminar_agenda, name='eliminar_agenda'),
+    path('filtrar/', views.filtrar_lugares, name='filtrar_lugares'),
 ]

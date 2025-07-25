@@ -1,0 +1,39 @@
+{% extends 'turista/base.html' %}
+{% block title %}Mi Agenda de Viajes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">📒 Mi Agenda de Viajes</h2>
+
+  {% if agenda %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for item in agenda %}
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <img src="{{ item.lugar.imagen.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ item.lugar.nombre }}">
+            
+            <div class="card-body">
+              <h5 class="card-title">{{ item.lugar.nombre }}</h5>
+              <p class="card-text">{{ item.lugar.descripcion|truncatechars:100 }}</p>
+              <p><strong>Fecha:</strong> {{ item.fecha_planificada }}</p>
+              <p><strong>Ubicación:</strong> {{ item.lugar.ubicacion }}</p>
+              <p><strong>Categoría:</strong> {{ item.lugar.get_categoria_display }}</p>
+            </div>
+
+            <div class="card-footer d-flex flex-wrap justify-content-between gap-2">
+              <a href="{% url 'marcar_favorito' item.id %}" class="btn btn-sm {% if item.es_favorito %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                {% if item.es_favorito %}💛{% else %}⭐{% endif %} Favorito
+              </a>
+
+              <a href="{% url 'editar_agenda' item.id %}" class="btn btn-sm btn-outline-success">✏️ Editar</a>
+              <a href="{% url 'eliminar_agenda' item.id %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">No tienes lugares en tu agenda aún. ¡Agrega uno desde el catálogo! 🧭</div>
+  {% endif %}
+</div>
+{% endblock %}

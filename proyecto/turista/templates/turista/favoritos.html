@@ -1,0 +1,29 @@
+{% extends 'turista/base.html' %}
+{% block title %}Lugares Favoritos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">⭐ Mis Lugares Favoritos</h2>
+
+  {% if favoritos %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for item in favoritos %}
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <img src="{{ item.lugar.imagen.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ item.lugar.nombre }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ item.lugar.nombre }}</h5>
+              <p class="card-text">{{ item.lugar.descripcion|truncatechars:100 }}</p>
+            </div>
+            <div class="card-footer text-end">
+              <a href="{% url 'marcar_favorito' item.id %}" class="btn btn-sm btn-warning">💛 Quitar Favorito</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-secondary">No has marcado ningún lugar como favorito.</div>
+  {% endif %}
+</div>
+{% endblock %}

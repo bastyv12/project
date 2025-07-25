@@ -6,6 +6,11 @@ from .forms import CustomUserCreationForm
 from .models import LugarTuristico, Comentario
 from .forms import  LugarForm, ComentarioForm
 from django.contrib.auth import logout
+from django.contrib import messages
+from .models import LugarTuristico, AgendaViajes
+from django.utils import timezone
+from .forms import AgendaForm
+from .models import CATEGORIAS
 
 def home(request):
     return render(request, 'turista/home.html')
@@ -120,3 +125,88 @@ def contacto(request):
 def blog(request):
     return render(request, 'turista/blog.html')
 
+@login_required
+def mi_agenda(request):
+    agenda = AgendaViajes.objects.filter(usuario=request.user).order_by('fecha_planificada')
+    return render(request, 'turista/mi_agenda.html', {'agenda': agenda})
+
+# ⭐ Vista de lugares favoritos
+@login_required
+def lugares_favoritos(request):
+    favoritos = AgendaViajes.objects.filter(usuario=request.user, es_favorito=True)
+    return render(request, 'turista/favoritos.html', {'favoritos': favoritos})
+
+# 📆 Vista de próximos viajes
+@login_required
+def proximos_viajes(request):
+    hoy = timezone.now().date()
+    proximos = AgendaViajes.objects.filter(usuario=request.user, fecha_planificada__gte=hoy)
+    return render(request, 'turista/proximos.html', {'proximos': proximos})
+
+# ➕ Agregar lugar a agenda
+@login_required
+def agregar_a_agenda(request, lugar_id):
+    lugar = get_object_or_404(LugarTuristico, id=lugar_id)
+
+    if AgendaViajes.objects.filter(usuario=request.user, lugar=lugar).exists():
+        messages.info(request, "Este lugar ya está en tu agenda.")
+    else:
+        AgendaViajes.objects.create(
+            usuario=request.user,
+            lugar=lugar,
+            fecha_planificada=timezone.now().date()
+        )
+        messages.success(request, "Lugar agregado a tu agenda.")
+
+    return redirect('mi_agenda')
+
+# ✅ Marcar o desmarcar favorito
+@login_required
+def marcar_favorito(request, agenda_id):
+    agenda = get_object_or_404(AgendaViajes, id=agenda_id, usuario=request.user)
+    agenda.es_favorito = not agenda.es_favorito
+    agenda.save()
+    return redirect('mi_agenda')
+
+@login_required
+def editar_agenda(request, agenda_id):
+    agenda = get_object_or_404(AgendaViajes, id=agenda_id, usuario=request.user)
+
+    if request.method == 'POST':
+        form = AgendaForm(request.POST, instance=agenda)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Fecha actualizada correctamente.")
+            return redirect('mi_agenda')
+    else:
+        form = AgendaForm(instance=agenda)
+
+    return render(request, 'turista/editar_agenda.html', {'form': form})
+
+@login_required
+def eliminar_agenda(request, agenda_id):
+    agenda = get_object_or_404(AgendaViajes, id=agenda_id, usuario=request.user)
+
+    if request.method == 'POST':
+        agenda.delete()
+        messages.success(request, "Lugar eliminado de tu agenda.")
+        return redirect('mi_agenda')
+
+    return render(request, 'turista/eliminar_agenda.html', {'agenda': agenda})
+
+def filtrar_lugares(request):
+    categoria = request.GET.get('categoria')
+    ubicacion = request.GET.get('ubicacion')
+    lugares = LugarTuristico.objects.all()
+
+    if categoria:
+        lugares = lugares.filter(categoria=categoria)
+    if ubicacion:
+        lugares = lugares.filter(ubicacion__icontains=ubicacion)
+
+    return render(request, 'turista/catalogo_filtrado.html', {
+        'lugares': lugares,
+        'categorias': CATEGORIAS,
+        'categoria': categoria,
+        'ubicacion': ubicacion
+    })
